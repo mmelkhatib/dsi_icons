@@ -1,0 +1,88 @@
+<?php
+/**
+ * @file
+ * dsi_icons.module
+ */
+
+
+/**
+ * Implements hook_icon_providers().
+ */
+
+
+
+
+
+ function dsi_icons_init() {
+  $checkJson =  file_exists($theme_path.'/css/global.css');
+ 
+ }
+ 
+/**
+ * Implements hook_icon_bundles().
+ * register bundles with Icon API
+ */
+function dsi_icons_icon_providers() {
+  $providers['dsi'] = array(
+    'title' => t('DSI Icons'),
+    'url' => 'http://leidos.com',
+    'default bundle' => array(
+      'render' => 'sprite',
+    ),
+  );
+  return $providers;
+}
+
+
+function dsi_icons_icon_bundles() 
+{
+  $json = dsi_json();
+  $bundles['dsi_icons'] = array(
+     'provider' => 'dsi',
+     'title' => t('DSI Icon Pack'),
+     'render' => 'sprite',
+     'settings' => array(
+       'tag' => 'span',
+     ),
+     'attributes' => array(
+      'class' => $json['preferences']['fontPref']['prefix'],
+     ),
+     '#attached' => array(
+      'css' => array(
+        'data' =>  drupal_get_path('module', 'dsi_icons') . '/icons/icons.css',
+      ),
+    ),
+     'icons' => _dsi_icons_get_icons(),
+   );
+   return $bundles;
+
+}
+
+/**
+ * Helper function for finding the JSON selection file
+ */
+
+function dsi_json() {
+  $path = drupal_get_path('module', 'dsi_icons');
+  if (file_exists($path . '/icons/selection.json')) {
+    $json = drupal_json_decode(file_get_contents($path . '/icons/selection.json'));
+  } 
+  // else{
+  //   drupal_set_message(t('A selection.json file must exist in the dsi_icons/icons directory for your icons to load properly. visit https://icomoon.io/app/# to generate your custom icon font.'), 'warning');
+  // }
+
+  return $json;
+}
+
+function _dsi_icons_get_icons() {
+  $build = array();
+  $json = dsi_json();
+  $prefix = $json['preferences']['fontPref']['prefix'];
+  foreach($json['icons'] as $icon) {
+    $name = $icon['properties']['name'];  
+    $build[$prefix . $name] = $name;
+  }
+  return($build);
+}
+
+

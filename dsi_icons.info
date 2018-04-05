@@ -1,0 +1,4 @@
+name = DSI Icon Sets
+description = Allows users to upload and manage background images that randomly display
+core = 7.x
+dependencies[] = icon
